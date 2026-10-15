@@ -1,0 +1,102 @@
+<meta charset="utf-8">
+<title>Unser Adventskalender</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Advent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Fredoka:wght@500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+
+<div class="seite">
+  <header class="kopf">
+    <div class="kopf-text">
+      <!-- 3 Sekunden lang drücken öffnet den Lehrpersonen-Modus -->
+      <h1 class="titel" id="titel">Unser Adventskalender</h1>
+      <p class="untertitel" id="untertitel">&nbsp;</p>
+    </div>
+    <button type="button" class="chip" id="lehrer-chip" hidden>Lehrpersonen-Einstellungen aktiv</button>
+  </header>
+
+  <main class="kalender" id="kalender" aria-label="Türchen">
+    <p class="laden">Kalender wird geladen …</p>
+  </main>
+</div>
+
+<!-- Bühne: zeigt den Inhalt eines geöffneten Türchens -->
+<section class="buehne" id="buehne" hidden aria-modal="true" role="dialog" aria-labelledby="buehne-tag">
+  <div class="buehne-kopf">
+    <button type="button" class="knopf" id="zurueck">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      Zurück
+    </button>
+    <span class="buehne-tag" id="buehne-tag"></span>
+  </div>
+  <div class="buehne-inhalt" id="buehne-inhalt"></div>
+</section>
+
+<!-- PIN-Eingabe -->
+<div class="dialog-huelle" id="pin" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="pin-titel">
+    <h2 id="pin-titel">PIN eingeben</h2>
+    <div class="pin-punkte" id="pin-punkte" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+    <div class="tastatur" id="tastatur">
+      <button type="button" class="taste" data-ziffer="1">1</button>
+      <button type="button" class="taste" data-ziffer="2">2</button>
+      <button type="button" class="taste" data-ziffer="3">3</button>
+      <button type="button" class="taste" data-ziffer="4">4</button>
+      <button type="button" class="taste" data-ziffer="5">5</button>
+      <button type="button" class="taste" data-ziffer="6">6</button>
+      <button type="button" class="taste" data-ziffer="7">7</button>
+      <button type="button" class="taste" data-ziffer="8">8</button>
+      <button type="button" class="taste" data-ziffer="9">9</button>
+      <button type="button" class="taste taste-leise" id="pin-abbrechen">Abbrechen</button>
+      <button type="button" class="taste" data-ziffer="0">0</button>
+      <button type="button" class="taste taste-leise" id="pin-loeschen">Löschen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Lehrpersonen-Modus -->
+<div class="dialog-huelle" id="lehrer" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="lehrer-titel">
+    <h2 id="lehrer-titel">Lehrpersonen-Modus</h2>
+    <p class="info" id="lehrer-info"></p>
+
+    <div class="einstellung">
+      <label class="schalter" for="alle-frei">
+        <input type="checkbox" id="alle-frei">
+        Alle Türchen freischalten
+      </label>
+      <p>Für Wochenenden, verpasste Tage und zum Testen.</p>
+    </div>
+
+    <div class="einstellung">
+      <label for="sim-datum">Datum simulieren</label>
+      <div class="zeile">
+        <input type="date" id="sim-datum">
+        <button type="button" class="knopf knopf-leise knopf-klein" id="sim-weg">Echtes Datum</button>
+      </div>
+      <p>Der Kalender verhält sich, als wäre heute dieser Tag.</p>
+    </div>
+
+    <div class="einstellung">
+      <span class="zeile">
+        <button type="button" class="knopf knopf-leise knopf-klein" id="zuruecksetzen">Alle Türchen wieder schliessen</button>
+      </span>
+      <div class="zeile" id="bestaetigen" hidden>
+        <p>Wirklich alle geöffneten Türchen schliessen?</p>
+        <button type="button" class="knopf knopf-warnung knopf-klein" id="ja-zuruecksetzen">Ja, schliessen</button>
+        <button type="button" class="knopf knopf-leise knopf-klein" id="nein-zuruecksetzen">Abbrechen</button>
+      </div>
+    </div>
+
+    <button type="button" class="knopf" id="lehrer-fertig">Fertig</button>
+  </div>
+</div>
+
+<div class="meldung" id="meldung" role="status" aria-live="polite" hidden></div>
+
+<script src="app.js"></script>
