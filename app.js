@@ -108,15 +108,41 @@ const klang = {
 
 
 // ---------- Sprache (Vorlesen) ----------
-function sprich(text) {
-  if (!text || !('speechSynthesis' in window)) return;
-  speechSynthesis.cancel();
+// Stimmen laden manche Browser erst verzögert, darum hier merken
+let stimmen = [];
+function stimmenLaden() {
+  try { stimmen = speechSynthesis.getVoices(); } catch (e) { stimmen = []; }
+}
+if ('speechSynthesis' in window) {
+  stimmenLaden();
+  speechSynthesis.addEventListener?.('voiceschanged', stimmenLaden);
+}
+
+let letzterSatz = null; // Referenz behalten, sonst bricht Chrome das Sprechen manchmal ab
+
+// beiFehler: wird aufgerufen, wenn das Gerät nicht sprechen kann
+function sprich(text, beiFehler) {
+  if (!text) return;
+  if (!('speechSynthesis' in window)) { if (beiFehler) beiFehler(); return; }
+  if (speechSynthesis.speaking || speechSynthesis.pending) speechSynthesis.cancel();
+  speechSynthesis.resume(); // Chrome bleibt manchmal im Pausenzustand hängen
+
   const satz = new SpeechSynthesisUtterance(text);
   satz.lang = 'de-DE';
   satz.rate = 0.85;
-  const stimme = speechSynthesis.getVoices().find((v) => v.lang.startsWith('de'));
+  if (!stimmen.length) stimmenLaden();
+  const stimme = stimmen.find((v) => v.lang === 'de-CH') || stimmen.find((v) => v.lang.startsWith('de'));
   if (stimme) satz.voice = stimme;
+
+  let gestartet = false;
+  satz.onstart = () => { gestartet = true; };
+  satz.onerror = (e) => { if (e.error !== 'interrupted' && e.error !== 'canceled' && beiFehler) beiFehler(); };
+  letzterSatz = satz;
   speechSynthesis.speak(satz);
+
+  if (beiFehler) {
+    setTimeout(() => { if (!gestartet && !speechSynthesis.speaking) beiFehler(); }, 1500);
+  }
 }
 
 function sprechenStoppen() {
@@ -525,13 +551,25 @@ const spieltypen = {
     const auswahl = element('div', 'auswahl');
     feld.append(fortschritt, hoeren, auswahl);
 
+    // Notlösung, falls das Gerät weder Datei noch Sprache abspielen kann:
+    // Das Geräusch erscheint als Sprechblase und ein kurzer Ton erklingt.
+    const sprechblase = (r) => {
+      hoeren.querySelector('.sprechblase')?.remove();
+      const blase = element('div', 'sprechblase', r.laut + '!');
+      hoeren.append(blase);
+      ton(392, 0, 0.25, 0.1, 'triangle');
+      ton(330, 0.25, 0.35, 0.1, 'triangle');
+      const zeit = setTimeout(() => blase.remove(), 3500);
+      aufraeumen.push(() => clearTimeout(zeit));
+    };
+
     const abspielen = (r) => {
       if (r.ton) {
         const a = new Audio(r.ton);
-        a.play().catch(() => sprich(r.laut));
+        a.play().catch(() => sprich(r.laut, () => sprechblase(r)));
         aufraeumen.push(() => a.pause());
       } else {
-        sprich(r.laut); // ohne Sounddatei spricht das iPad das Geräusch
+        sprich(r.laut, () => sprechblase(r)); // ohne Sounddatei spricht das Gerät das Geräusch
       }
     };
 
