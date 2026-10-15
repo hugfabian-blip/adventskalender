@@ -1,0 +1,843 @@
+/* Layout: verschneite Winternacht als Vollbild, darauf 24 Papiertürchen mit perforiertem Rand,
+   locker verstreut. Bewusst nur ein dunkles Farbschema: reizarm und auf allen iPads gleich. */
+:root {
+  --nacht: #1c2640;
+  --nacht-2: #26324f;
+  --nacht-3: #34415f;
+  --schnee: #f5f0e6;
+  --schnee-gedimmt: #c3cad8;
+  --gold: #e8c06e;
+  --tinte: #1b2437;
+  --gruen: #4f8a5b;
+  --tuer-papier: #efe2c6;
+  --tuer-salbei: #b3c8ab;
+  --tuer-rose: #e0ab9d;
+  --tuer-eis: #b3c4dc;
+  --schrift-zahl: "Fredoka", "Arial Rounded MT Bold", system-ui, sans-serif;
+  --schrift-text: "Andika", "Trebuchet MS", system-ui, sans-serif;
+  --radius: 14px;
+  color-scheme: dark;
+}
+
+[hidden] { display: none !important; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  background-color: var(--nacht);
+  background-position: center bottom;
+  background-size: cover;
+  background-repeat: no-repeat;
+  color: var(--schnee);
+  font-family: var(--schrift-text);
+  font-size: 18px;
+  line-height: 1.4;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overflow: hidden;
+}
+
+.seite {
+  box-sizing: border-box;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-block: 14px 18px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* ---------- Kopf ---------- */
+.kopf {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 8px 16px;
+  text-shadow: 0 2px 12px rgba(10, 14, 26, .7);
+}
+.kopf-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.titel {
+  position: relative;
+  margin: 0;
+  font-family: var(--schrift-zahl);
+  font-weight: 600;
+  font-size: clamp(1.7rem, 4vw, 2.6rem);
+  line-height: 1.1;
+  text-wrap: balance;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  cursor: default;
+}
+.titel::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  height: 3px;
+  width: 0;
+  background: var(--gold);
+  border-radius: 2px;
+  opacity: 0;
+}
+.titel.drueckt::after { width: 100%; opacity: .8; transition: width 3s linear, opacity .3s; }
+.untertitel { margin: 0; color: var(--schnee-gedimmt); font-size: 1.05rem; }
+
+.chip {
+  font: 600 .9rem var(--schrift-text);
+  color: var(--gold);
+  background: rgba(28, 38, 64, .7);
+  border: 2px solid var(--gold);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+
+/* ---------- Kalender: Türchen frei verteilt ---------- */
+.kalender {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+.laden, .fehler { color: var(--schnee-gedimmt); }
+.fehler { color: var(--tuer-rose); max-width: 60ch; }
+
+.tuer {
+  --groesse: 100px;
+  position: absolute;
+  width: var(--groesse);
+  height: var(--groesse);
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius);
+  background: rgba(20, 28, 51, .85);
+  box-shadow: inset 0 3px 10px rgba(0, 0, 0, .5), 0 6px 18px rgba(8, 12, 24, .45);
+  perspective: 900px;
+  font: inherit;
+  color: var(--tinte);
+  cursor: pointer;
+}
+.tuer:focus-visible { outline: 4px solid var(--schnee); outline-offset: 3px; }
+
+.tuer-innen {
+  position: absolute;
+  inset: 5px;
+  border-radius: 10px;
+  background: var(--schnee);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  visibility: hidden;
+}
+.ist-offen .tuer-innen, .oeffnet .tuer-innen { visibility: visible; }
+.tuer-innen img { width: 76%; height: 76%; object-fit: contain; }
+.tuer-symbol { font-size: calc(var(--groesse) * .46); line-height: 1; }
+.mini-zahl {
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  font: 600 calc(var(--groesse) * .16) var(--schrift-zahl);
+  color: var(--tinte);
+  opacity: .65;
+}
+
+.tuer-blatt {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  background: var(--farbe, var(--tuer-papier));
+  display: grid;
+  place-items: center;
+  transform-origin: left center;
+}
+.tuer-blatt::before {
+  content: "";
+  position: absolute;
+  inset: 7px;
+  border: 2px dashed rgba(27, 36, 55, .3);
+  border-radius: 9px;
+}
+.zahl {
+  font-family: var(--schrift-zahl);
+  font-weight: 600;
+  font-size: calc(var(--groesse) * .42);
+  color: var(--tinte);
+  font-variant-numeric: tabular-nums;
+}
+.ist-offen .tuer-blatt { display: none; }
+.oeffnet { z-index: 5; }
+.oeffnet .tuer-blatt { animation: aufklappen .85s ease-in-out forwards; }
+@keyframes aufklappen {
+  0%   { transform: rotateY(0); opacity: 1; }
+  75%  { transform: rotateY(-100deg); opacity: 1; }
+  100% { transform: rotateY(-110deg); opacity: 0; }
+}
+
+.ist-heute { outline: 4px solid var(--gold); outline-offset: 3px; z-index: 2; }
+.heute-marke {
+  position: absolute;
+  top: -12px;
+  right: -8px;
+  z-index: 3;
+  font: 600 .8rem var(--schrift-zahl);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  background: var(--gold);
+  color: var(--tinte);
+  padding: 3px 9px;
+  border-radius: 999px;
+}
+
+.wackeln { animation: wackeln .45s ease-in-out; }
+@keyframes wackeln {
+  0%, 100% { rotate: 0deg; }
+  25% { rotate: -4deg; }
+  75% { rotate: 4deg; }
+}
+
+/* ---------- Bühne ---------- */
+.buehne {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+  background: var(--nacht);
+  padding-top: max(14px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  animation: einblenden .35s ease-out;
+}
+.buehne-kopf { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.buehne-tag { font: 600 1.4rem var(--schrift-zahl); color: var(--gold); }
+.buehne-inhalt {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  min-height: 0;
+}
+.aufgabe { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 16px; }
+.aufgabe-text {
+  margin: 0;
+  font-size: clamp(1.35rem, 3vw, 1.9rem);
+  line-height: 1.25;
+  max-width: 32ch;
+  text-wrap: balance;
+}
+.spielfeld {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+@keyframes einblenden { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- Knöpfe ---------- */
+.knopf {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 64px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--schnee);
+  color: var(--tinte);
+  font: 600 1.3rem var(--schrift-zahl);
+  cursor: pointer;
+}
+.knopf svg { width: 28px; height: 28px; flex: none; }
+.knopf-leise { background: transparent; color: var(--schnee); border: 2px solid var(--nacht-3); }
+.knopf-klein { min-height: 48px; font-size: 1.05rem; padding: 0 18px; }
+.knopf-gross { min-height: 88px; padding: 0 40px; font-size: 1.7rem; }
+.knopf-gross svg { width: 40px; height: 40px; }
+.knopf-warnung { background: var(--tuer-rose); }
+.knopf:focus-visible, .chip:focus-visible, .taste:focus-visible,
+.wahl:focus-visible, .karte:focus-visible, .kerze:focus-visible, .glocke:focus-visible { outline: 4px solid var(--gold); outline-offset: 3px; }
+
+/* ---------- Erfolg ---------- */
+.geschafft {
+  position: absolute;
+  inset: 0;
+  z-index: 55;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 24px;
+  background: rgba(28, 38, 64, .94);
+  text-align: center;
+  animation: einblenden .4s ease-out;
+}
+.sterne { position: relative; width: 180px; height: 180px; display: grid; place-items: center; }
+.stern-gross { font-size: 110px; line-height: 1; animation: aufploppen .6s cubic-bezier(.3, 1.6, .5, 1); }
+.funke {
+  position: absolute;
+  font-size: 30px;
+  opacity: 0;
+  animation: funkeln 1.2s ease-out .15s forwards;
+}
+@keyframes aufploppen { from { transform: scale(.2); } to { transform: scale(1); } }
+@keyframes funkeln {
+  0% { opacity: 0; transform: rotate(var(--winkel)) translateY(0) scale(.4); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(var(--winkel)) translateY(-110px) scale(1); }
+}
+.geschafft-text { margin: 0; font: 600 clamp(2rem, 5vw, 3rem) var(--schrift-zahl); text-wrap: balance; }
+.zeile { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.zentriert { justify-content: center; }
+
+/* ---------- Bild ---------- */
+.bild-rahmen {
+  box-sizing: border-box;
+  height: min(52vh, 520px);
+  aspect-ratio: 1;
+  max-width: 100%;
+  padding: 24px;
+  border-radius: 24px;
+  background: var(--schnee);
+  display: grid;
+  place-items: center;
+}
+.bild-rahmen img { width: 100%; height: 100%; object-fit: contain; }
+.bild-text { margin: 0; max-width: 24ch; font-size: clamp(1.6rem, 3.6vw, 2.4rem); line-height: 1.3; text-wrap: balance; }
+
+/* ---------- Video ---------- */
+.video-huelle {
+  position: relative;
+  width: min(100%, calc((100vh - 220px) * 4 / 3), 900px);
+  aspect-ratio: 4 / 3;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #000;
+}
+.video-huelle video { width: 100%; height: 100%; display: block; object-fit: cover; }
+.video-start {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 130px;
+  height: 130px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(245, 240, 230, .92);
+  color: var(--tinte);
+  cursor: pointer;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, .4);
+}
+.video-start svg { width: 64px; height: 64px; margin-left: 8px; }
+
+/* ---------- Himmel (Schneezauber, Fangen) ---------- */
+.himmel {
+  position: relative;
+  width: min(100%, calc((100vh - 240px) * 4 / 3), 900px);
+  aspect-ratio: 4 / 3;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(#141c33, #2d3d66);
+  cursor: pointer;
+  touch-action: none;
+}
+.schneedecke {
+  position: absolute;
+  left: -5%;
+  right: -5%;
+  bottom: 0;
+  height: 8%;
+  background: var(--schnee);
+  border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+  transition: height .6s ease;
+}
+.flocke-fall {
+  position: absolute;
+  font-size: 34px;
+  pointer-events: none;
+  animation: fallen 3s linear forwards;
+}
+@keyframes fallen {
+  from { transform: translate(-50%, -50%); opacity: 1; }
+  to { transform: translate(calc(-50% + var(--seite)), var(--weg)); opacity: .8; }
+}
+.schneemann-auftritt {
+  position: absolute;
+  left: 50%;
+  bottom: 12%;
+  font-size: clamp(90px, 18vh, 170px);
+  line-height: 1;
+  translate: -50% 0;
+  animation: aufploppen .7s cubic-bezier(.3, 1.6, .5, 1);
+}
+
+.fang-himmel { cursor: default; }
+.fang-flocke {
+  position: absolute;
+  left: 0;
+  top: -72px;
+  width: 72px;
+  height: 72px;
+  border: 0;
+  padding: 0;
+  background: none;
+  font-size: 52px;
+  cursor: pointer;
+  will-change: transform;
+}
+.fang-flocke.gefangen { animation: gefangen .4s ease-out forwards; }
+@keyframes gefangen { to { scale: 1.8; opacity: 0; } }
+.fang-zaehler { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; font-size: 30px; }
+.fang-punkt { opacity: .25; filter: grayscale(1); transition: opacity .3s; }
+.fang-punkt.voll { opacity: 1; filter: none; }
+
+/* ---------- Kerzen ---------- */
+.kranz {
+  position: relative;
+  width: min(100%, 640px, calc((100vh - 240px) * 1.6));
+  aspect-ratio: 16 / 10;
+}
+.kranz-ring {
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: 6%;
+  height: 34%;
+  border-radius: 50%;
+  border: clamp(18px, 4vw, 34px) solid var(--gruen);
+  box-shadow: 0 0 0 4px #3a6b45 inset, 0 0 0 4px #3a6b45;
+}
+.kerze {
+  position: absolute;
+  left: var(--x);
+  bottom: calc(18% + var(--hoch));
+  translate: -50% 0;
+  width: 13%;
+  height: 58%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+.kerzen-koerper {
+  position: absolute;
+  inset: 26% 12% 0;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #c8574a 0 30%, #d86c5f 30% 45%, #c8574a 45%);
+}
+.docht {
+  position: absolute;
+  left: 50%;
+  top: 19%;
+  width: 4px;
+  height: 8%;
+  translate: -50% 0;
+  background: #3b3b3b;
+  border-radius: 2px;
+}
+.flamme {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 46%;
+  height: 22%;
+  translate: -50% 0;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%;
+  background: radial-gradient(circle at 50% 70%, #fbe7a8 0 25%, #f0b64a 55%);
+  box-shadow: 0 0 30px 12px rgba(240, 182, 74, .45);
+  opacity: 0;
+  scale: .3;
+  transition: opacity .4s, scale .4s;
+}
+.kerze.an .flamme { opacity: 1; scale: 1; animation: flackern 2.4s ease-in-out infinite; }
+@keyframes flackern { 0%, 100% { rotate: -2deg; } 50% { rotate: 2deg; } }
+
+/* ---------- Auswahl (Tiere, Zahlen) ---------- */
+.fortschritt { display: flex; gap: 10px; }
+.punkt { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--schnee-gedimmt); }
+.punkt.voll { background: var(--gold); border-color: var(--gold); }
+.punkt.jetzt { border-color: var(--gold); }
+.auswahl { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(12px, 3vw, 32px); }
+.wahl {
+  width: clamp(110px, 20vw, 190px);
+  aspect-ratio: 1;
+  border: 4px solid transparent;
+  border-radius: 28px;
+  background: var(--schnee);
+  font-size: clamp(64px, 12vw, 120px);
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color .3s, background .3s;
+}
+.wahl-zahl { font-family: var(--schrift-zahl); font-weight: 600; color: var(--tinte); font-size: clamp(54px, 9vw, 90px); }
+.wahl.richtig { border-color: var(--gold); background: #fbf1d6; }
+.wahl:disabled { cursor: default; }
+.hinweis { animation: hinweis 1.6s ease-in-out infinite; }
+@keyframes hinweis {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(232, 192, 110, .0); }
+  50% { box-shadow: 0 0 0 12px rgba(232, 192, 110, .55); }
+}
+
+/* ---------- Memory ---------- */
+.memory {
+  display: grid;
+  grid-template-columns: repeat(var(--spalten), 1fr);
+  gap: clamp(10px, 2vw, 18px);
+  width: min(100%, calc((100vh - 240px) * var(--spalten) / 2.1), 760px);
+}
+.karte {
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  background: none;
+  perspective: 800px;
+  cursor: pointer;
+}
+.karte-innen {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform .5s ease;
+}
+.karte.offen .karte-innen { transform: rotateY(180deg); }
+.karte-ruecken, .karte-vorne {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  display: grid;
+  place-items: center;
+}
+.karte-ruecken {
+  background: var(--tuer-eis);
+  background-image: radial-gradient(circle, rgba(27, 36, 55, .18) 2px, transparent 2.5px);
+  background-size: 18px 18px;
+}
+.karte-vorne {
+  background: var(--schnee);
+  transform: rotateY(180deg);
+  font-size: clamp(48px, 9vw, 92px);
+}
+.karte.paar .karte-vorne { box-shadow: inset 0 0 0 4px var(--gold); }
+
+/* ---------- Zuordnen / Ziehen ---------- */
+.ziele, .teile { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(12px, 3vw, 28px); }
+.ziel {
+  position: relative;
+  width: clamp(100px, 17vw, 160px);
+  aspect-ratio: 1;
+  border-radius: 24px;
+  border: 3px dashed var(--schnee-gedimmt);
+  display: grid;
+  place-items: center;
+  font-size: clamp(60px, 10vw, 104px);
+  line-height: 1;
+}
+.ziel.gefuellt { border-style: solid; border-color: var(--gold); }
+.schatten { filter: brightness(0); opacity: .55; }
+.ziel-kiste {
+  width: clamp(150px, 30vw, 280px);
+  aspect-ratio: 4 / 3;
+  border: 4px solid var(--zielfarbe);
+  background: color-mix(in srgb, var(--zielfarbe) 22%, transparent);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 10px;
+  box-sizing: border-box;
+  font-size: clamp(40px, 6vw, 60px);
+}
+.ziel-kiste.gefuellt { border-color: var(--zielfarbe); }
+.ziel-text { font: 600 1.3rem var(--schrift-zahl); color: var(--schnee); }
+.ablage { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; }
+
+.teil {
+  width: clamp(84px, 14vw, 130px);
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: var(--schnee);
+  font-size: clamp(54px, 9vw, 88px);
+  line-height: 1;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, .25);
+}
+.teil.zieht { cursor: grabbing; z-index: 20; position: relative; box-shadow: 0 14px 30px rgba(0, 0, 0, .45); }
+.teil.gewaehlt { outline: 4px solid var(--gold); outline-offset: 3px; }
+.teil.platziert { width: auto; background: none; box-shadow: none; cursor: default; font-size: inherit; aspect-ratio: auto; }
+.ablage .teil.platziert { font-size: inherit; }
+
+.bildfeld {
+  position: relative;
+  height: min(46vh, 440px);
+  aspect-ratio: 1;
+  max-width: 100%;
+  border-radius: 24px;
+  background: var(--schnee);
+  container-type: size;
+}
+.bildfeld img { width: 100%; height: 100%; object-fit: contain; }
+.ziel-auf-bild {
+  position: absolute;
+  width: calc(var(--g) * 1%);
+  translate: -50% -50%;
+  border-color: rgba(27, 36, 55, .35);
+  border-radius: 50%;
+  font-size: calc(var(--g) * .8cqw);
+}
+.ziel-auf-bild.gefuellt { border-color: transparent; }
+
+/* ---------- Puzzle ---------- */
+.puzzle-brett {
+  --kante: min(40vh, 380px, 42vw);
+  display: grid;
+  grid-template-columns: repeat(var(--spalten), calc(var(--kante) / var(--spalten)));
+  grid-template-rows: repeat(var(--zeilen), calc(var(--kante) / var(--zeilen)));
+  border-radius: 18px;
+  overflow: hidden;
+  background: var(--schnee);
+  position: relative;
+}
+/* blasses Vorlagebild als Hilfe */
+.puzzle-brett::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--bild) center / 100% 100% no-repeat;
+  opacity: .18;
+}
+.puzzle-platz { position: relative; outline: 2px dashed rgba(27, 36, 55, .25); outline-offset: -1px; }
+.puzzle-brett.fertig .puzzle-platz { outline-color: transparent; }
+.puzzle-ablage {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+.puzzle-teil {
+  width: calc(min(40vh, 380px, 42vw) / var(--spalten));
+  aspect-ratio: 1;
+  border-radius: 10px;
+  background-color: var(--schnee);
+  background-repeat: no-repeat;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, .25);
+  cursor: grab;
+  touch-action: none;
+}
+.puzzle-teil.zieht { position: relative; z-index: 20; }
+.puzzle-teil.gewaehlt { outline: 4px solid var(--gold); outline-offset: 3px; }
+.puzzle-teil.platziert { width: 100%; height: 100%; border-radius: 0; box-shadow: none; cursor: default; }
+
+/* ---------- Zählen ---------- */
+.zaehl-reihe { display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(10px, 2.5vw, 24px); }
+.zaehl-objekt {
+  position: relative;
+  width: clamp(90px, 14vw, 130px);
+  aspect-ratio: 1;
+  border: 0;
+  border-radius: 22px;
+  background: rgba(245, 240, 230, .12);
+  font-size: clamp(56px, 9vw, 84px);
+  line-height: 1;
+  filter: grayscale(.8);
+  opacity: .6;
+  cursor: pointer;
+  transition: opacity .3s, filter .3s, background .3s;
+}
+.zaehl-objekt.gezaehlt { opacity: 1; filter: none; background: rgba(245, 240, 230, .9); }
+.zaehl-nummer {
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--gold);
+  color: var(--tinte);
+  font: 600 1.3rem var(--schrift-zahl);
+}
+.zaehl-anzeige { font: 600 clamp(64px, 12vh, 110px) var(--schrift-zahl); color: var(--gold); line-height: 1; min-height: 1em; }
+.zaehl-frage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.zaehl-frage-text { margin: 0; font-size: 1.6rem; }
+
+/* ---------- Glockenspiel ---------- */
+.glocken { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-end; gap: clamp(10px, 2.5vw, 26px); }
+.glocke {
+  width: clamp(90px, 14vw, 150px);
+  height: calc(clamp(150px, 30vh, 280px) * var(--hoehe));
+  min-height: 120px;
+  border: 0;
+  border-radius: 24px 24px 18px 18px;
+  background: var(--glockenfarbe);
+  font-size: clamp(48px, 7vw, 72px);
+  cursor: pointer;
+  transform-origin: 50% 0;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, .25);
+}
+.glocke.schwingt { animation: schwingen .7s ease-out; }
+@keyframes schwingen {
+  0% { rotate: 0deg; } 25% { rotate: 8deg; } 55% { rotate: -6deg; } 80% { rotate: 3deg; } 100% { rotate: 0deg; }
+}
+
+/* ---------- Geschenk ---------- */
+.paket {
+  border: 0;
+  background: none;
+  font-size: clamp(140px, 30vh, 260px);
+  line-height: 1;
+  cursor: pointer;
+  scale: var(--wachsen, 1);
+  transition: scale .3s ease;
+}
+.ueberraschung { font-size: clamp(140px, 30vh, 260px); line-height: 1; animation: aufploppen .7s cubic-bezier(.3, 1.6, .5, 1); }
+
+/* ---------- Baum schmücken ---------- */
+.baum {
+  position: relative;
+  height: min(50vh, 480px);
+  aspect-ratio: 1;
+  max-width: 100%;
+}
+.baum img { width: 100%; height: 100%; }
+.teil.haengt {
+  position: absolute;
+  translate: -50% -50%;
+  width: auto;
+  font-size: min(5vh, 46px);
+}
+
+/* ---------- Suchbild ---------- */
+.szene {
+  position: relative;
+  width: min(100%, calc((100vh - 200px) * 4 / 3), 1100px);
+  aspect-ratio: 4 / 3;
+  border-radius: 20px;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  container-type: inline-size;
+}
+.deko, .gesucht {
+  position: absolute;
+  translate: -50% -50%;
+  font-size: calc(var(--g) * 1cqw);
+  line-height: 1;
+}
+.deko { pointer-events: none; }
+.gesucht {
+  width: calc(var(--g) * 1.3cqw);
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.gesucht img { width: 100%; height: 100%; object-fit: contain; }
+.gesucht.gefunden { box-shadow: 0 0 0 6px var(--gold), 0 0 30px 10px rgba(232, 192, 110, .6); }
+
+/* ---------- Dialoge (PIN, Lehrpersonen) ---------- */
+.dialog-huelle {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(10, 14, 26, .75);
+}
+.dialog {
+  box-sizing: border-box;
+  width: min(440px, 100%);
+  max-height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 24px;
+  border-radius: 20px;
+  background: var(--nacht-2);
+}
+.dialog h2 { margin: 0; font: 600 1.5rem var(--schrift-zahl); }
+.dialog p { margin: 0; color: var(--schnee-gedimmt); }
+.pin-punkte { display: flex; justify-content: center; gap: 14px; }
+.pin-punkte span { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--schnee-gedimmt); }
+.pin-punkte span.voll { background: var(--gold); border-color: var(--gold); }
+.tastatur { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.taste {
+  min-height: 64px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--nacht-3);
+  color: var(--schnee);
+  font: 600 1.6rem var(--schrift-zahl);
+  cursor: pointer;
+}
+.taste-leise { font-size: 1rem; background: transparent; }
+.einstellung { display: flex; flex-direction: column; gap: 8px; padding-top: 14px; border-top: 1px solid var(--nacht-3); }
+.einstellung label { font-weight: 700; }
+.schalter { display: flex; align-items: center; gap: 12px; font-weight: 700; cursor: pointer; }
+.schalter input { width: 28px; height: 28px; accent-color: var(--gold); }
+input[type="date"] {
+  min-height: 48px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 2px solid var(--nacht-3);
+  background: var(--nacht);
+  color: var(--schnee);
+  font: 1rem var(--schrift-text);
+}
+.info { font-size: .95rem; }
+
+/* ---------- Meldung ---------- */
+.meldung {
+  position: fixed;
+  left: 50%;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  z-index: 70;
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
+  padding: 14px 22px;
+  border-radius: 14px;
+  background: var(--schnee);
+  color: var(--tinte);
+  font-size: 1.1rem;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .oeffnet .tuer-blatt { animation-duration: .01s; }
+  .wackeln, .buehne, .geschafft, .stern-gross, .funke, .hinweis, .glocke.schwingt,
+  .kerze.an .flamme, .schneemann-auftritt, .ueberraschung { animation: none; }
+  .funke { display: none; }
+  .hinweis { box-shadow: 0 0 0 8px rgba(232, 192, 110, .55); }
+  .karte-innen { transition: none; }
+  .titel.drueckt::after { transition: none; width: 100%; }
+}

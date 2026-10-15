@@ -1,0 +1,136 @@
+{
+  "titel": "Unser Adventskalender",
+  "pin": "2412",
+  "anordnung": "gemischt",
+  "hintergrund": "media/hintergrund.svg",
+  "tueren": [
+    { "tag": 1, "typ": "schneezauber", "symbol": "❄️",
+      "aufgabe": "Tippe auf den Himmel. Es schneit!",
+      "tipps": 12, "schluss": "Ein Schneemann!" },
+
+    { "tag": 2, "typ": "kerzen", "symbol": "🕯️",
+      "aufgabe": "Tippe auf die Kerzen. Sie gehen an.",
+      "anzahl": 4, "schluss": "Alle Kerzen brennen!" },
+
+    { "tag": 3, "typ": "tiergeraeusch", "symbol": "🐄",
+      "aufgabe": "Hör gut zu. Welches Tier ist das?",
+      "runden": [
+        { "richtig": "🐄", "name": "die Kuh",   "laut": "Muuuh",   "ton": "", "auswahl": ["🐄", "🐶", "🐱"] },
+        { "richtig": "🐶", "name": "der Hund",  "laut": "Wau wau", "ton": "", "auswahl": ["🐑", "🐶", "🐄"] },
+        { "richtig": "🐱", "name": "die Katze", "laut": "Miau",    "ton": "", "auswahl": ["🐶", "🐓", "🐱"] }
+      ],
+      "schluss": "Du kennst alle Tiere!" },
+
+    { "tag": 4, "typ": "memory", "symbol": "🎄",
+      "aufgabe": "Finde die Paare.",
+      "karten": ["🎄", "⭐", "🎁"], "schluss": "Alle Paare gefunden!" },
+
+    { "tag": 5, "typ": "zuordnen", "symbol": "🔔",
+      "aufgabe": "Welcher Schatten passt? Zieh das Bild zum Schatten.",
+      "ziele": [ { "id": "baum", "e": "🎄", "schatten": true }, { "id": "stern", "e": "⭐", "schatten": true }, { "id": "glocke", "e": "🔔", "schatten": true } ],
+      "teile": [ { "e": "🎄", "ziel": "baum" }, { "e": "⭐", "ziel": "stern" }, { "e": "🔔", "ziel": "glocke" } ],
+      "schluss": "Alles passt!" },
+
+    { "tag": 6, "typ": "suchbild", "symbol": "🎅",
+      "aufgabe": "Wo ist der Samichlaus? Tippe ihn an!",
+      "szene": "media/hintergrund.svg",
+      "ziel": { "bild": "media/nikolaus.svg", "x": 71, "y": 72, "groesse": 9 },
+      "deko": ["⛄", "🦌", "🐿️", "🦉", "🛷", "🐑", "⛄", "🦊", "🐇", "🦌", "🎄", "🐦"],
+      "schluss": "Da ist der Samichlaus!" },
+
+    { "tag": 7, "typ": "video", "symbol": "🌨️",
+      "aufgabe": "Schau zu: Es schneit im Dorf.",
+      "video": "media/video/schneefall.mp4" },
+
+    { "tag": 8, "typ": "zuordnen", "symbol": "⛄",
+      "aufgabe": "Zieh dem Schneemann Hut, Nase und Schal an.",
+      "bild": "media/schneemann-ohne.svg",
+      "ziele": [
+        { "id": "hut",  "x": 50, "y": 9, "g": 24 },
+        { "id": "nase", "x": 55, "y": 29, "g": 14 },
+        { "id": "schal","x": 50, "y": 39, "g": 26 }
+      ],
+      "teile": [ { "e": "🎩", "ziel": "hut" }, { "e": "🥕", "ziel": "nase" }, { "e": "🧣", "ziel": "schal" } ],
+      "schluss": "Jetzt friert der Schneemann nicht mehr!" },
+
+    { "tag": 9, "typ": "zaehlen", "symbol": "🕯️",
+      "aufgabe": "Tippe jede Kerze an und zähle mit.",
+      "objekt": "🕯️", "anzahl": 3, "auswahl": [2, 3, 4], "schluss": "Richtig, es sind drei!" },
+
+    { "tag": 10, "typ": "glockenspiel", "symbol": "🔔",
+      "aufgabe": "Tippe auf die Glocken und mach Musik.",
+      "schluss": "Schöne Musik!" },
+
+    { "tag": 11, "typ": "puzzle", "symbol": "🧩",
+      "aufgabe": "Leg das Puzzle. Zieh die Teile an den richtigen Platz.",
+      "bild": "media/tanne.svg", "spalten": 2, "zeilen": 2, "schluss": "Der Tannenbaum ist fertig!" },
+
+    { "tag": 12, "typ": "tiergeraeusch", "symbol": "🐑",
+      "aufgabe": "Hör gut zu. Welches Tier ist das?",
+      "runden": [
+        { "richtig": "🐑", "name": "das Schaf", "laut": "Määäh",      "ton": "", "auswahl": ["🐑", "🐷", "🐓"] },
+        { "richtig": "🐓", "name": "der Hahn",  "laut": "Kikeriki",   "ton": "", "auswahl": ["🐄", "🐓", "🐑"] },
+        { "richtig": "🐷", "name": "das Schwein","laut": "Oink oink", "ton": "", "auswahl": ["🐷", "🐱", "🐓"] }
+      ],
+      "schluss": "Super zugehört!" },
+
+    { "tag": 13, "typ": "zuordnen", "symbol": "🔴",
+      "aufgabe": "Rote Kugeln in die rote Kiste, blaue in die blaue.",
+      "ziele": [ { "id": "rot", "farbe": "#d9655a", "text": "Rot" }, { "id": "blau", "farbe": "#5f86c4", "text": "Blau" } ],
+      "teile": [ { "e": "🔴", "ziel": "rot" }, { "e": "🔵", "ziel": "blau" }, { "e": "🔴", "ziel": "rot" }, { "e": "🔵", "ziel": "blau" }, { "e": "🔴", "ziel": "rot" }, { "e": "🔵", "ziel": "blau" } ],
+      "schluss": "Alles ist sortiert!" },
+
+    { "tag": 14, "typ": "fangen", "symbol": "❄️",
+      "aufgabe": "Fang die Schneeflocken! Tippe sie an.",
+      "objekt": "❄️", "anzahl": 8, "schluss": "Du hast alle Flocken gefangen!" },
+
+    { "tag": 15, "typ": "suchbild", "symbol": "🦌",
+      "aufgabe": "Wo ist das Rentier? Tippe es an!",
+      "szene": "media/hintergrund.svg",
+      "ziel": { "e": "🦌", "x": 22, "y": 64, "groesse": 7 },
+      "deko": ["⛄", "🐿️", "🦉", "🛷", "🐑", "🦊", "🐇", "🐦", "⛄", "🎄"],
+      "schluss": "Da ist das Rentier!" },
+
+    { "tag": 16, "typ": "memory", "symbol": "🧦",
+      "aufgabe": "Finde die Paare.",
+      "karten": ["🔔", "🧦", "🍪", "⛄"], "schluss": "Alle Paare gefunden!" },
+
+    { "tag": 17, "typ": "auspacken", "symbol": "🧸",
+      "aufgabe": "Tippe auf das Geschenk. Was ist drin?",
+      "tipps": 3, "ueberraschung": "🧸", "schluss": "Ein Teddybär!" },
+
+    { "tag": 18, "typ": "zuordnen", "symbol": "🍪",
+      "aufgabe": "Welcher Schatten passt? Zieh das Bild zum Schatten.",
+      "ziele": [ { "id": "a", "e": "⛄", "schatten": true }, { "id": "b", "e": "🧦", "schatten": true }, { "id": "c", "e": "🍪", "schatten": true }, { "id": "d", "e": "🕯️", "schatten": true } ],
+      "teile": [ { "e": "⛄", "ziel": "a" }, { "e": "🧦", "ziel": "b" }, { "e": "🍪", "ziel": "c" }, { "e": "🕯️", "ziel": "d" } ],
+      "schluss": "Alles passt!" },
+
+    { "tag": 19, "typ": "video", "symbol": "🕯️",
+      "aufgabe": "Schau zu: Eine Kerze brennt ganz ruhig.",
+      "video": "media/video/kerze.mp4" },
+
+    { "tag": 20, "typ": "zaehlen", "symbol": "⭐",
+      "aufgabe": "Tippe jeden Stern an und zähle mit.",
+      "objekt": "⭐", "anzahl": 5, "auswahl": [4, 5, 6], "schluss": "Richtig, es sind fünf!" },
+
+    { "tag": 21, "typ": "puzzle", "symbol": "🧩",
+      "aufgabe": "Leg das Puzzle. Zieh die Teile an den richtigen Platz.",
+      "bild": "media/schneemann.svg", "spalten": 2, "zeilen": 2, "schluss": "Der Schneemann ist fertig!" },
+
+    { "tag": 22, "typ": "schmuecken", "symbol": "🎄",
+      "aufgabe": "Schmücke den Baum. Zieh die Kugeln auf den Baum.",
+      "bild": "media/tanne-leer.svg", "schmuck": ["🔴", "🟡", "🔵", "🟣", "🔴", "🟡"],
+      "schluss": "Der Baum ist wunderschön!" },
+
+    { "tag": 23, "typ": "suchbild", "symbol": "🎁",
+      "aufgabe": "Wo ist das Geschenk? Tippe es an!",
+      "szene": "media/hintergrund.svg",
+      "ziel": { "e": "🎁", "x": 44, "y": 82, "groesse": 7 },
+      "deko": ["⛄", "🦌", "🐿️", "🦉", "🛷", "🐑", "🦊", "🐇", "🐦", "⛄", "🦌"],
+      "schluss": "Da ist das Geschenk!" },
+
+    { "tag": 24, "typ": "kerzen", "symbol": "⭐",
+      "aufgabe": "Zünde alle Kerzen an. Heute ist Weihnachten!",
+      "anzahl": 4, "schluss": "Frohe Weihnachten!" }
+  ]
+}
